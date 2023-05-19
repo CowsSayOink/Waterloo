@@ -209,7 +209,23 @@ matplotlib.pyplot.show()
 
 
 
+'''
+# Stop sequencer.
+qrm.stop_sequencer()
 
+# Print status of sequencer.
+print(qrm.get_sequencer_state(0))
+print()
+
+# Uncomment the following to print an overview of the instrument parameters.
+# Print an overview of the instrument parameters.
+# print("Snapshot:")
+# qrm.print_readable_snapshot(update=True)
+
+# Close the instrument connection.
+Pulsar.close_all()
+Cluster.close_all()
+'''
 
 
 

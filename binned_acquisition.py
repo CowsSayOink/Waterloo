@@ -177,6 +177,91 @@ print(qrm.get_sequencer_state(0, 1))
 
 
 
+# Wait for the sequencer to stop with a timeout period of one minute.
+qrm.get_acquisition_state(0, 1)
+
+# Move acquisition data from temporary memory to acquisition list.
+qrm.store_scope_acquisition(0, "non_weighed")
+
+# Get acquisition list from instrument.
+non_weighed_acq = qrm.get_acquisitions(0)["non_weighed"]
+
+# Plot acquired signal on both inputs.
+fig, ax = matplotlib.pyplot.subplots(1, 1, figsize=(15, 15 / 2 / 1.61))
+ax.plot(non_weighed_acq["acquisition"]["scope"]["path0"]["data"][0:1000])
+ax.plot(non_weighed_acq["acquisition"]["scope"]["path1"]["data"][0:1000])
+ax.set_xlabel("Time (ns)")
+ax.set_ylabel("Relative amplitude")
+matplotlib.pyplot.show()
+
+
+
+
+int_len = qrm.sequencer0.integration_length_acq()
+bins = non_weighed_acq["acquisition"]["bins"]
+bins["integration"]["path0"] = [(val / int_len) for val in bins["integration"]["path0"]]
+bins["integration"]["path1"] = [(val / int_len) for val in bins["integration"]["path1"]]
+#print(bins) #prints a bunch of stuff
+
+
+
+# Sequence program.
+seq_prog = """
+      move            0,R0            #Loop iterator.
+      move            0,R1            #Weight for path 0.
+      move            1,R2            #Weight for path 1.
+      nop
+
+loop: acquire_weighed 1,R0,R1,R2,1200 #Acquire bins and store them in "weighed" acquisition.
+      add             R0,1,R0         #Increment iterator
+      nop                             #Wait a cycle for R0 to be available.
+      jlt             R0,10,@loop     #Run until number of iterations is done.
+
+      stop                            #Stop.
+"""
+
+
+# Add sequence program, waveforms, weights and acquistitions to single dictionary and write to JSON file.
+sequence = {
+    "waveforms": waveforms_weights,
+    "weights": waveforms_weights,
+    "acquisitions": acquisitions,
+    "program": seq_prog,
+}
+with open("sequence.json", "w", encoding="utf-8") as file:
+    json.dump(sequence, file, indent=4)
+    file.close()
+
+# Upload sequence.
+qrm.sequencer0.sequence("sequence.json")
+
+# Arm and start sequencer.
+qrm.arm_sequencer(0)
+qrm.start_sequencer()
+
+# Print status of sequencer.
+print(qrm.get_sequencer_state(0, 1))
+
+# Wait for the sequencer to stop with a timeout period of one minute.
+qrm.get_acquisition_state(0, 1)
+
+# Get acquisition list from instrument.
+weighed_acq = qrm.get_acquisitions(0)["weighed"]
+
+int_len = waveform_weight_length
+bins = weighed_acq["acquisition"]["bins"]
+bins["integration"]["path0"] = [(val / int_len) for val in bins["integration"]["path0"]]
+bins["integration"]["path1"] = [(val / int_len) for val in bins["integration"]["path1"]]
+
+
+
+
+
+
+print('done')
+
+
+
 
 
 

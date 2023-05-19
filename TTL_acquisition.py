@@ -181,6 +181,108 @@ print(qrm.get_sequencer_state(0, 1))
 print(qrm.get_sequencer_state(1, 1))
 
 
+'''
+# Wait for the sequencer to stop with a timeout period of one minute.
+qrm.get_acquisition_state(1, 1)
+
+# Move acquisition data from temporary memory to acquisition list.
+qrm.store_scope_acquisition(1, "ttl")
+
+# Get acquisition list from instrument.
+data = qrm.get_acquisitions(1)["ttl"]
+
+# Plot acquired signal on both inputs.
+print("pulses detected: " + str(data["acquisition"]["bins"]["avg_cnt"][0]))
+
+fig, ax = plt.subplots(1, 1, figsize=(15, 15 / 2 / 1.61))
+ax.plot(data["acquisition"]["scope"]["path0"]["data"][0:6000], label='Trace')
+ax.axhline(y=threshold, color='r', label='Threshold')
+ax.set_xlabel("Time (ns)")
+ax.set_ylabel("Amplitude (Volt)")
+plt.legend(loc="upper right")
+plt.show()
+
+'''
+
+
+
+
+# Sequence program for AWG.
+def generate_pulse_program(num_pulses, wait_time):
+    seq_prog_awg = f"""
+               wait_sync 4        #Wait for sequencers to synchronize and then wait another 4ns.
+               move      {num_pulses},R0     #Loop iterator.
+    loop:
+               play      0,0,16   #Play a block on output path 0 and wait 16ns.
+               wait      {wait_time}     #Wait 1000ns
+               loop      R0, @loop #Repeat loop until R0 is 0
+
+               stop               #Stop the sequence after the last iteration.
+    """
+    return seq_prog_awg
+
+# Upload sequence to AWG
+def upload_sequence(seq_prog_awg):
+    sequence_awg = {
+    "waveforms": waveforms,
+    "weights": {},
+    "acquisitions": {},
+    "program": seq_prog_awg,
+    }
+
+    qrm.sequencer0.sequence(sequence_awg)
+
+
+seq_prog_awg = generate_pulse_program(num_pulses=5, wait_time=20)
+upload_sequence(seq_prog_awg)
+
+# Choose threshold and input gain
+threshold = 0.5
+input_gain = 0
+
+# Delete previous acquisition.
+qrm.delete_acquisition_data(1, "ttl")
+
+#Set input gain and threshold
+qrm.in0_gain(input_gain)
+qrm.sequencer1.ttl_acq_threshold(threshold)
+
+
+# Arm and start sequencer.
+qrm.arm_sequencer(0)
+qrm.arm_sequencer(1)
+qrm.start_sequencer()
+
+# Print status of sequencer.
+print(qrm.get_sequencer_state(0, 1))
+print(qrm.get_sequencer_state(1, 1))
+
+
+
+# Wait for the sequencer to stop with a timeout period of one minute.
+qrm.get_acquisition_state(1, 1)
+
+# Move acquisition data from temporary memory to acquisition list.
+qrm.store_scope_acquisition(1, "ttl")
+
+# Get acquisition list from instrument.
+data = qrm.get_acquisitions(1)["ttl"]
+
+# Plot acquired signal on both inputs.
+print("pulses detected: " + str(data["acquisition"]["bins"]["avg_cnt"][0]))
+
+fig, ax = plt.subplots(1, 1, figsize=(15, 15 / 2 / 1.61))
+ax.plot(data["acquisition"]["scope"]["path0"]["data"][0:200], label='Trace')
+ax.axhline(y=threshold, color='r', label='Threshold')
+ax.set_xlabel("Time (ns)")
+ax.set_ylabel("Amplitude (Volt)")
+plt.legend(loc="upper right")
+plt.show()
+
+
+
+
+
 
 
 
