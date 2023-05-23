@@ -82,6 +82,8 @@ display(connect_qxm)
 
 # Connect to the cluster QRM
 qrm = getattr(cluster, 'module4')  # Connect to the module that you have chosen above, module4 is the QRM address
+#Module 4 is because readout is in the 4th doc in the physical hardware. if its in a different port, change the channel number
+
 
 print("connected")
 print(cluster.get_system_state())

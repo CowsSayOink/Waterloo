@@ -191,7 +191,7 @@ cluster.module4.sequencer0.nco_prop_delay_comp(50)
 transmon_chip.cfg_sched_repetitions(2048)
 
 for att in np.arange(20, 4, -8):
-    print(att)
+    #print(att)
     config = transmon_chip.hardware_config()
     config["cluster"]["cluster_module4"]["complex_output_0"]["output_att"] = att
     transmon_chip.hardware_config(config)
@@ -212,7 +212,7 @@ for att in np.arange(20, 4, -8):
     )
     measurement_control.gettables(gettable)
 
-    res_spec_dset = measurement_control.run("ResonatorSpectroscopy")
+    res_spec_dset = measurement_control.run('ResonatorSpectroscopy')
     res_spec_result = ResonatorSpectroscopyAnalysis(
         dataset=res_spec_dset,
     ).run()

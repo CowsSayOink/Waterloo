@@ -1,4 +1,5 @@
-print("starting")
+
+print("Starting hello world")
 
 import json
 import warnings
@@ -35,7 +36,6 @@ with PlugAndPlay() as p:
     p.print_devices()
 
 
-
 cluster = Cluster("cluster", "Erie")# Either Erie or Ontario depending on the cluster
 # Reset
 cluster.reset()
@@ -46,11 +46,13 @@ ic.add_component(ClusterComponent(cluster))
 
 measurement_control = MeasurementControl("QubitCalibration")
 
+#There is a problem with the following block of code, but i think its just for plotting
+'''
 plotmon = PlotMonitor("PlotMonitor")
 instmon = InstrumentMonitor("InstrumentMonitor")
 measurement_control.instr_plotmon(plotmon.name)
 plotmon.tuids_max_num(1)
-
+'''
 
 
 '''The central component for all experiments is the QuantumDevice. It connects information about the qubits and their connectivity with the involved control hardware, 
@@ -421,31 +423,6 @@ class LorentzianModel(lmfit.model.Model):
 #measurement_control.__init__
 
 
-print('ran Hello world')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print('Finished hello world\n')
 
 
