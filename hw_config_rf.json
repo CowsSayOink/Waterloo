@@ -1,0 +1,46 @@
+{
+    "backend": "quantify_scheduler.backends.qblox_backend.hardware_compile",
+    "cluster": {
+        "ref": "internal",
+        "instrument_type": "Cluster",
+        "sequence_to_file": false,
+        "cluster_module2": {
+            "complex_output_0": {
+                "dc_mixer_offset_I": 0,
+                "dc_mixer_offset_Q": 0,
+                "lo_freq": 5900000000.0,
+                "line_gain_db": 0,
+                "portclock_configs": [{
+                    "clock": "q0.01",
+                    "port": "q0:mw",
+                    "mixer_amp_ratio": 0.5923,
+                    "mixer_phase_error": -5.272
+                }]
+            },
+            "complex_output_1": {
+                "line_gain_db": 0,
+                "portclock_configs": [{
+                    "clock": "q1.01",
+                    "interm_freq": 100e6,
+                    "port": "q1:mw"
+                }]
+            },
+            "instrument_type": "QCM_RF"
+        },
+        "cluster_module4": {
+            "complex_output_0": {
+                "output_att": 20,
+                "dc_mixer_offset_I": 0,
+                "dc_mixer_offset_Q": 0,
+                "lo_freq": 6500000000.0,
+                "portclock_configs": [{
+                    "clock": "q0.ro",
+                    "port": "q0:res",
+                    "mixer_amp_ratio": 1,
+                    "mixer_phase_error": 0
+                }]
+            },
+            "instrument_type": "QRM_RF"
+        }
+    }
+}
