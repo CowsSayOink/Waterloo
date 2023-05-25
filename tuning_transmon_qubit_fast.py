@@ -3,8 +3,6 @@ import warnings
 from typing import Any, Callable, Dict
 
 import lmfit
-import matplotlib.pyplot as plt
-import numpy as np
 from qblox_instruments import Cluster, ClusterType, PlugAndPlay
 from qblox_instruments.ieee488_2 import DummyBinnedAcquisitionData
 from quantify_core.analysis import base_analysis as ba
@@ -56,7 +54,7 @@ from quantify_scheduler.schedules import (
     t1_sched,
     readout_calibration_sched
 )
-from quantify_scheduler.schedules.spectroscopy_schedules import heterodyne_spec_sched, two_tone_spec_sched
+from quantify_scheduler.schedules.spectroscopy_schedules import heterodyne_spec_sched_nco, two_tone_spec_sched_nco
 
 from quantify_core.data.handling import set_datadir
 
@@ -191,7 +189,7 @@ cluster.module4.sequencer0.nco_prop_delay_comp(50)
 transmon_chip.cfg_sched_repetitions(2048)
 
 for att in np.arange(20, 4, -8):
-    #print(att)
+    print(att)
     config = transmon_chip.hardware_config()
     config["cluster"]["cluster_module4"]["complex_output_0"]["output_att"] = att
     transmon_chip.hardware_config(config)
@@ -201,23 +199,30 @@ for att in np.arange(20, 4, -8):
     freq = ManualParameter(name="frequency", unit="Hz", label="f")
     freq.batched = True
 
+
     measurement_control.settables(freq)
     measurement_control.setpoints(np.linspace(6.74e9, 6.76e9, 2001))
     gettable = ScheduleGettable(
         quantum_device=transmon_chip,
-        schedule_function=heterodyne_spec_sched,
+        schedule_function=heterodyne_spec_sched_nco,
         schedule_kwargs=nco_heterodyne_spec_kwargs(qubit_0, frequencies=freq),
         real_imag=False,
         batched=True
     )
-    measurement_control.gettables(gettable)
 
-    res_spec_dset = measurement_control.run('ResonatorSpectroscopy')
+    measurement_control.gettables(gettable)
+    print('line 214')
+    res_spec_dset = measurement_control.run('ResonatorSpectroscopy') #It seems that the code stops here.
+    print('test')
+
     res_spec_result = ResonatorSpectroscopyAnalysis(
         dataset=res_spec_dset,
     ).run()
+    print('test 1')
     plt.plot(res_spec_result.dataset_processed.x0, detrend(np.unwrap(np.angle(res_spec_result.dataset_processed.S21))))
+
     res_spec_result.display_figs_mpl()
+    print('test 2')
     plt.show()
 
 
@@ -676,7 +681,6 @@ def cost_function(pars):
 from scipy.optimize import minimize
 res = minimize(cost_function, x0=(0.14, 6.750792e9), bounds=((0.1, 0.25), (6.7e9, 6.8e9)))
 
-res
 
 cost_function([1.39852543e-01, 6.75079200e+09])
 
@@ -716,7 +720,6 @@ plt.scatter(dset.y0[ground], dset.y1[ground])
 ground = np.where(dset["x0"]==1)
 plt.scatter(dset.y0[ground], dset.y1[ground])
 
-dset
 
 #Loading data
 from quantify_core.data.handling import load_dataset
@@ -725,36 +728,6 @@ rabi_data = load_dataset("20230116-161745") #Change to your own data
 
 r = RabiAnalysis(rabi_data).run(calibration_points=True)
 r.display_figs_mpl()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
