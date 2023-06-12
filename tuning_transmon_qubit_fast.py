@@ -1,10 +1,7 @@
 import json
-import warnings
 from typing import Any, Callable, Dict
 
 import lmfit
-import matplotlib.pyplot as plt
-import numpy as np
 from qblox_instruments import Cluster, ClusterType, PlugAndPlay
 from qblox_instruments.ieee488_2 import DummyBinnedAcquisitionData
 from quantify_core.analysis import base_analysis as ba
@@ -24,7 +21,6 @@ from quantify_scheduler.instrument_coordinator.components.qblox import \
 
 from qblox_instruments.ieee488_2 import DummyBinnedAcquisitionData
 from quantify_core.data.handling import set_datadir
-# warnings.simplefilter("always")
 
 
 import warnings
@@ -56,28 +52,21 @@ from quantify_scheduler.schedules import (
     t1_sched,
     readout_calibration_sched
 )
-from quantify_scheduler.schedules.spectroscopy_schedules import heterodyne_spec_sched, two_tone_spec_sched
+
+from quantify_scheduler.schedules.spectroscopy_schedules import heterodyne_spec_sched_nco, two_tone_spec_sched_nco
+
+
 
 from quantify_core.data.handling import set_datadir
 
 set_datadir("quantify_data")
-# warnings.simplefilter("always")
 
-
-
-
-#import ipynb #I dont think well need this!
 
 from hello_world import qubit_0, measurement_control, transmon_chip, cluster
 from hello_world import compiler
 from hello_world import heterodyne_spec_kwargs, two_tone_spec_kwargs, rabi_kwargs
 from hello_world import set_dummy_data_rabi, clear_dummy_data, heterodyne_spec_sched_with_dummy
 from hello_world import QubitSpectroscopyAnalysis
-
-
-
-
-np.asarray([qubit_0.clock_freqs.readout()])
 
 
 
@@ -190,6 +179,9 @@ cluster.module4.sequencer0.nco_prop_delay_comp(50)
 
 transmon_chip.cfg_sched_repetitions(2048)
 
+
+
+#actual measurement
 for att in np.arange(20, 4, -8):
     print(att)
     config = transmon_chip.hardware_config()
@@ -201,24 +193,33 @@ for att in np.arange(20, 4, -8):
     freq = ManualParameter(name="frequency", unit="Hz", label="f")
     freq.batched = True
 
+
     measurement_control.settables(freq)
     measurement_control.setpoints(np.linspace(6.74e9, 6.76e9, 2001))
     gettable = ScheduleGettable(
         quantum_device=transmon_chip,
-        schedule_function=heterodyne_spec_sched,
+        schedule_function=heterodyne_spec_sched_nco,
         schedule_kwargs=nco_heterodyne_spec_kwargs(qubit_0, frequencies=freq),
         real_imag=False,
         batched=True
     )
-    measurement_control.gettables(gettable)
 
-    res_spec_dset = measurement_control.run("ResonatorSpectroscopy")
+    measurement_control.gettables(gettable)
+    print('line 214')
+    res_spec_dset = measurement_control.run('ResonatorSpectroscopy') #It seems that the code stops here.
+    print('test')
+
     res_spec_result = ResonatorSpectroscopyAnalysis(
         dataset=res_spec_dset,
     ).run()
+    print('test 1')
     plt.plot(res_spec_result.dataset_processed.x0, detrend(np.unwrap(np.angle(res_spec_result.dataset_processed.S21))))
+
     res_spec_result.display_figs_mpl()
+    print('test 2')
     plt.show()
+
+
 
 
 qubit_0.clock_freqs.readout(6.751e9)
@@ -244,7 +245,7 @@ measurement_control.setpoints(np.linspace(6.75e9, 6.753e9, 300))
 
 import inspect
 heterodyne_spec_function = heterodyne_spec_sched
-print(inspect.getsource(heterodyne_spec_sched))
+#print(inspect.getsource(heterodyne_spec_sched)) #This thing prints a bunch of stuff!
 
 # The schedule function itself is still an abstract object, it does not refer to the hardware config (e.g. cabling, ip addresses) yet.
 # To fully define the measurements, we define a `ScheduleGettable`, which fully describes the experiment.
@@ -676,7 +677,6 @@ def cost_function(pars):
 from scipy.optimize import minimize
 res = minimize(cost_function, x0=(0.14, 6.750792e9), bounds=((0.1, 0.25), (6.7e9, 6.8e9)))
 
-res
 
 cost_function([1.39852543e-01, 6.75079200e+09])
 
@@ -716,7 +716,6 @@ plt.scatter(dset.y0[ground], dset.y1[ground])
 ground = np.where(dset["x0"]==1)
 plt.scatter(dset.y0[ground], dset.y1[ground])
 
-dset
 
 #Loading data
 from quantify_core.data.handling import load_dataset
@@ -725,36 +724,6 @@ rabi_data = load_dataset("20230116-161745") #Change to your own data
 
 r = RabiAnalysis(rabi_data).run(calibration_points=True)
 r.display_figs_mpl()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

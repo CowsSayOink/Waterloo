@@ -1,4 +1,5 @@
-print("starting")
+
+print("Starting hello world")
 
 import json
 import warnings
@@ -30,13 +31,11 @@ from quantify_core.data.handling import set_datadir
 
 set_datadir("quantify_data")
 
-#Not sure if this is essential
 with PlugAndPlay() as p:
     p.print_devices()
 
 
-
-cluster = Cluster("cluster", "Erie")# Either Erie or Ontario depending on the cluster
+cluster = Cluster("cluster", "Ontario")# Either Erie or Ontario depending on the cluster
 # Reset
 cluster.reset()
 
@@ -46,11 +45,13 @@ ic.add_component(ClusterComponent(cluster))
 
 measurement_control = MeasurementControl("QubitCalibration")
 
+#There is a problem with the following block of code, but i think its just for plotting
+'''
 plotmon = PlotMonitor("PlotMonitor")
 instmon = InstrumentMonitor("InstrumentMonitor")
 measurement_control.instr_plotmon(plotmon.name)
 plotmon.tuids_max_num(1)
-
+'''
 
 
 '''The central component for all experiments is the QuantumDevice. It connects information about the qubits and their connectivity with the involved control hardware, 
@@ -78,7 +79,7 @@ transmon_chip.cfg_sched_repetitions(1024)
 qubit_0 = BasicTransmonElement("q0")
 transmon_chip.add_element(qubit_0)
 
-qubit_0.clock_freqs.readout(6.75078e9)
+qubit_0.clock_freqs.readout(6.74e9)
 qubit_0.clock_freqs.f01(6.01e9)
 
 qubit_0.measure.pulse_amp(0.006)
@@ -418,34 +419,8 @@ class LorentzianModel(lmfit.model.Model):
         return lmfit.models.update_param_vals(params, self.prefix, **kws)
 
 
-#measurement_control.__init__
 
 
-print('ran Hello world')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print('Finished hello world\n')
 
 

@@ -75,7 +75,9 @@ display(connect_qxm)
 
 # Connect to the cluster QxM module
 module = connect_qxm.value
-qxm = getattr(cluster, module)
+#qxm = getattr(cluster, module) #original code
+qxm = getattr(cluster, "module2")
+
 print(f"{available_slots[connect_qxm.value]} connected")
 print(cluster.get_system_state())
 

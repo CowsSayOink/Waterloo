@@ -31,12 +31,7 @@ from quantify_scheduler.schedules.timedomain_schedules import (
     readout_calibration_sched
 )
 
-from quantify_scheduler.schedules.spectroscopy_schedules import (
-    heterodyne_spec_sched,
-    two_tone_spec_sched,
-)
-
-
+from quantify_scheduler.schedules.spectroscopy_schedules import heterodyne_spec_sched_nco, two_tone_spec_sched_nco
 
 #import ipynb
 from hello_world import qubit_0, measurement_control, transmon_chip
@@ -67,7 +62,7 @@ As Resonator spectroscopy is a standard experiment, we can simply import the fun
 
 
 # TODO: We should show a schedule function somewhere
-heterodyne_spec_function = heterodyne_spec_sched
+heterodyne_spec_function = heterodyne_spec_sched_nco
 
 '''
 The schedule function itself is still an abstract object, it does not refer to the hardware config (e.g. cabling, ip addresses) yet. 
@@ -76,8 +71,8 @@ To fully define the measurements, we define a `ScheduleGettable`, which fully de
 
 gettable = ScheduleGettable(
     quantum_device=transmon_chip,
-    schedule_function=heterodyne_spec_function,
-    schedule_kwargs=heterodyne_spec_kwargs(qubit_0, frequency=freq),
+    schedule_function=heterodyne_spec_sched_nco,
+    schedule_kwargs=nco_heterodyne_spec_kwargs(qubit_0, frequency=freq),
     real_imag=False,
 )
 
@@ -128,7 +123,7 @@ np.linspace(0.001, 0.05, 20)[3]
 
 gettable = ScheduleGettable(
     transmon_chip,
-    heterodyne_spec_sched,
+    heterodyne_spec_sched_nco(),
     heterodyne_spec_kwargs(qubit_0, frequency=freq, pulse_amp=amp),
     real_imag=False,
 )
@@ -149,7 +144,7 @@ qubit_spec_sched_kwargs = two_tone_spec_kwargs(qubit_0, spec_pulse_frequency=fre
 
 gettable = ScheduleGettable(
     transmon_chip,
-    schedule_function=two_tone_spec_sched,
+    schedule_function=two_tone_spec_sched_nco,
     schedule_kwargs=qubit_spec_sched_kwargs,
     real_imag=False,
 )
