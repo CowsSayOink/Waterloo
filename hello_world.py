@@ -35,7 +35,7 @@ with PlugAndPlay() as p:
     p.print_devices()
 
 
-cluster = Cluster("cluster", "Erie")# Either Erie or Ontario depending on the cluster
+cluster = Cluster("cluster", "Ontario")# Either Erie or Ontario depending on the cluster
 # Reset
 cluster.reset()
 

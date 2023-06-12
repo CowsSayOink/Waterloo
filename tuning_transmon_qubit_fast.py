@@ -1,5 +1,4 @@
 import json
-import warnings
 from typing import Any, Callable, Dict
 
 import lmfit
@@ -22,7 +21,6 @@ from quantify_scheduler.instrument_coordinator.components.qblox import \
 
 from qblox_instruments.ieee488_2 import DummyBinnedAcquisitionData
 from quantify_core.data.handling import set_datadir
-# warnings.simplefilter("always")
 
 
 import warnings
@@ -54,28 +52,21 @@ from quantify_scheduler.schedules import (
     t1_sched,
     readout_calibration_sched
 )
+
 from quantify_scheduler.schedules.spectroscopy_schedules import heterodyne_spec_sched_nco, two_tone_spec_sched_nco
+
+
 
 from quantify_core.data.handling import set_datadir
 
 set_datadir("quantify_data")
-# warnings.simplefilter("always")
 
-
-
-
-#import ipynb #I dont think well need this!
 
 from hello_world import qubit_0, measurement_control, transmon_chip, cluster
 from hello_world import compiler
 from hello_world import heterodyne_spec_kwargs, two_tone_spec_kwargs, rabi_kwargs
 from hello_world import set_dummy_data_rabi, clear_dummy_data, heterodyne_spec_sched_with_dummy
 from hello_world import QubitSpectroscopyAnalysis
-
-
-
-
-np.asarray([qubit_0.clock_freqs.readout()])
 
 
 
@@ -188,6 +179,9 @@ cluster.module4.sequencer0.nco_prop_delay_comp(50)
 
 transmon_chip.cfg_sched_repetitions(2048)
 
+
+
+#actual measurement
 for att in np.arange(20, 4, -8):
     print(att)
     config = transmon_chip.hardware_config()
@@ -226,6 +220,8 @@ for att in np.arange(20, 4, -8):
     plt.show()
 
 
+
+
 qubit_0.clock_freqs.readout(6.751e9)
 config = transmon_chip.hardware_config()
 config["cluster"]["cluster_module4"]["complex_output_0"]["output_att"] = 56
@@ -249,7 +245,7 @@ measurement_control.setpoints(np.linspace(6.75e9, 6.753e9, 300))
 
 import inspect
 heterodyne_spec_function = heterodyne_spec_sched
-print(inspect.getsource(heterodyne_spec_sched))
+#print(inspect.getsource(heterodyne_spec_sched)) #This thing prints a bunch of stuff!
 
 # The schedule function itself is still an abstract object, it does not refer to the hardware config (e.g. cabling, ip addresses) yet.
 # To fully define the measurements, we define a `ScheduleGettable`, which fully describes the experiment.
