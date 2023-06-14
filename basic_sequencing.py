@@ -76,7 +76,7 @@ display(connect_qxm)
 
 # Connect to the cluster QxM module
 module = connect_qxm.value
-qxm = getattr(cluster, module)
+qxm = getattr(cluster, "module4")
 print(f"{available_slots[connect_qxm.value]} connected")
 print(cluster.get_system_state())
 
@@ -161,24 +161,22 @@ print(qxm.get_sequencer_state(0))
 print(qxm.get_sequencer_state(1))
 
 
-
-# Stop both sequencers.
-qxm.stop_sequencer()
-
-# Print status of both sequencers (should now say it is stopped).
-print(qxm.get_sequencer_state(0))
-print(qxm.get_sequencer_state(1))
-print()
-
-# Uncomment the following to print an overview of the instrument parameters.
-# Print an overview of the instrument parameters.
-# print("Snapshot:")
-# qxm.print_readable_snapshot(update=True)
-
-# Close the instrument connection.
-Cluster.close_all()
-
-
+#
+# # Stop both sequencers.
+# qxm.stop_sequencer()
+#
+# # Print status of both sequencers (should now say it is stopped).
+# print(qxm.get_sequencer_state(0))
+# print(qxm.get_sequencer_state(1))
+# print()
+#
+# # Uncomment the following to print an overview of the instrument parameters.
+# # Print an overview of the instrument parameters.
+# # print("Snapshot:")
+# # qxm.print_readable_snapshot(update=True)
+#
+# # Close the instrument connection.
+# Cluster.close_all()
 
 
 
@@ -190,6 +188,8 @@ Cluster.close_all()
 
 
 
+
+print('done')
 
 
 

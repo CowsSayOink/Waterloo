@@ -79,7 +79,9 @@ print(f"{available_slots[connect_qrm_rf.value]} connected")
 print(cluster.get_system_state())
 
 
-
+#Resonator
+'''
+#Resonator
 # Parameters
 no_averages = 10
 integration_length = 1000
@@ -126,7 +128,7 @@ with open("sequence.json", "w", encoding="utf-8") as file:
     file.close()
 
 
-'''
+
 
 qrm_rf.sequencer0.marker_ovr_en(True)
 qrm_rf.sequencer0.marker_ovr_value(15)  # Enables output on QRM-RF
@@ -205,8 +207,10 @@ matplotlib.pyplot.show()
 
 
 
-
-
+#Calibration
+'''
+#Calibration
+print("This is for calibration, we also need to plug into a spectrum analyzer")
 cluster.reset()
 
 # Sequence program.
@@ -311,6 +315,43 @@ interact(
 
 
 
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -331,7 +372,26 @@ print()
 cluster.close()
 
 
+
+
 print('done')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
